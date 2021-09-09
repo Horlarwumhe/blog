@@ -1,0 +1,4 @@
+__pycache__
+bs
+*.log
+boot.sh

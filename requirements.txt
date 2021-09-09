@@ -1,0 +1,8 @@
+Markdown
+redis
+requests
+rq
+SQLAlchemy
+psycopg2
+gunicorn
+dramatiq

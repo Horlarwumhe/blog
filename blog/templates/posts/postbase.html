@@ -1,0 +1,104 @@
+<html lang="en">
+
+<head>
+  <title> Create </title>
+  <link rel="stylesheet" type="text/css" href="/static/css/bootstrap.css">
+  <!-- <link rel="stylesheet" href="/static/static/font.32be62914940.css"> -->
+
+
+  <!-- <link rel="stylesheet" href="static/realpython.min.31e7bf3a6d40.css"> -->
+  <link rel="stylesheet" type="text/css" href="/static/popup.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/highlight.css">
+
+<body>
+
+  <div class="container main-content">
+  	{% block content %}
+  	{% endblock %}
+ </div>
+</body>
+
+{% block script %}
+  <script type="text/javascript" src="/static/js/markdown.js"></script>
+  <script type="text/javascript" src="/static/js/highlight.js"></script>
+  <script type="text/javascript">
+
+        function getElement(id) {
+          return document.getElementById(id)
+        }
+
+        function addEvent(event) {
+          var value = targets[event.target.id]
+          text = null
+          url = null
+          if (event.target.id == "link") {
+            var text = prompt('you clicked link, enter link text')
+            if (!text) {
+              return
+            }
+            var url = prompt('enter url')
+            if (!url){
+              return
+            }
+            value = `[${text}](${url})`
+          }
+          else if (event.target.id == "link-image") {
+            var text = prompt("you clicked image, enter image text")
+            if (!text) {
+              return
+            }
+            var url = prompt('enter image url')
+            if (!url){
+              return
+            }
+            value = `![${text}](${url})`
+          }
+
+          body.value = `${body.value}  ${value}`
+        }
+
+        var checkbox = document.getElementById('optimage');
+        var urlfield = document.getElementById("imagelink");
+        var imagefield = document.getElementById("image")
+        var body = document.querySelector("textarea")
+        body.addEventListener('keydown', count)
+        var bold = getElement("bold").addEventListener('click', addEvent)
+        var section = getElement('section').addEventListener('click', addEvent)
+        var list = getElement('list').addEventListener('click', addEvent)
+        var link = getElement('link').addEventListener('click', addEvent)
+        var linkimage = getElement("link-image").addEventListener('click', addEvent)
+        var targets = {
+          "link": "[]()",
+          'bold': '****',
+          'list': '-',
+          'link-image': "![]()",
+          'section': "##"
+        }
+
+        function count(e) {
+          var c = document.getElementById('count')
+          c.innerText = e.target.value.length
+        }
+        function checkEvent(e) {
+          if (checkbox.checked) {
+            imagefield.hidden = true
+            urlfield.hidden = false
+
+          }
+          else {
+            imagefield.hidden = false
+            urlfield.hidden = true
+          }
+        }
+
+        checkbox.addEventListener('click', checkEvent)
+        pre = getElement('preview')
+        pre.addEventListener('click', preview)
+        function preview(e) {
+          el = getElement('bodypreview')
+          el.innerHTML = marked(body.value)
+          hljs.highlightAll()
+
+        }
+      </script>
+{% endblock %}

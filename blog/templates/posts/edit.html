@@ -1,0 +1,85 @@
+{% extends 'posts/postbase.html' %}
+   
+   {% block content %}
+    <div class="col-md-6">
+      <div class="row">
+        <div>
+          
+          <p class="text-danger">{{ error}}
+          </p>
+
+          <div class="col-12" id="subscribe-popup">
+            <div class="card mb-3 bg-secondary">
+              <form class="form-group" method="post" accept="/create" enctype="multipart/form-data">
+              {% if model == 'post' %}
+                  <div class="col-md-6 mb-3">
+                    <label for="email"> Blog Title </label>
+                    <input type="text" name="title" value="{{post.title}}" class="form-control" id="title" placeholder="Blog title" required>
+                  </div>
+                {% endif %}
+                <div class="col-md-6 mb-3">
+                  <label for="body"> edit {{model}} </label>
+                  <br>
+                  <div class="btn-group">
+                    <a class="btn btn-default" href="#">
+                      <i class="fa fa-bold" title="Bold text" id="bold">B</i>
+                    </a>
+                    <a class="btn btn-link" href="#">
+                      <i class="fa fa-link" title="Embed Link" id="link">URL</i>
+                    </a>
+                    <a class="btn btn-camera" href="#">
+                      <i class="fa fa-camera" title="Embed Image" id="link-image">IMG</i>
+                    </a>
+                    <a class="btn btn-default" href="#">
+                      <i class="fa fa-align-left" title="Item List" id="list">LIST</i>
+                    </a>
+                    <a class="btn btn-default" href="#">
+                      <i class="fa fa-align-justify" title="section" id="section">#</i>
+                    </a>
+                  </div>
+
+                  <textarea name="{% if model == 'post' %}body{%else%}text{%endif%}" rows="15" cols="40">{% if model == 'post' %}{{post.body}}{% else %}{{post.text}}{% endif %}</textarea>
+                  length
+                  <p id='count' style="color: red;"> 0 </p>
+                   
+                </div>
+              {% if model == 'post' %}
+                <div id="image">
+                  <label for="image"> Blog Image </label>
+                  <input type="file" name="image">
+                </div>
+                <input type="checkbox" name="" id="optimage"> or enter image url
+                <div class="col-md-6 mb-3" id="imagelink" hidden>
+                  <label for="email"> Image Url </label>
+                  <input type="text" name="imageurl" class="form-control" id="imageurl">
+                  <div class="invalid-feedback">
+                    image url
+                  </div>
+                </div>
+              {% endif %}
+                <div class="col-5">
+                  <button class="btn btn-block btn-success" name="">
+                    <i class="fa fa-send">Update</i>
+
+                  </button>
+                  <input type="button" onclick="preview" id="preview" class="btn btn-block btn-success" name=""
+                    value="Preview">
+                  <i class="fa fa-send"></i>
+                </div>
+
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+      </div>
+
+      <div id='bodypreview'></div>
+
+    </div>
+{% endblock %}
+
+{% block script super%}
+{% endblock %}

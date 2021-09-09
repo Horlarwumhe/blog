@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<title>{{post.title}}</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/static/css/w3.css">
+<link href="/static/css/bs/bootstrap.css" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/w3-theme-black.css">
+<link rel="stylesheet" type="text/css" href="/static/css/highlight.css">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+  html,
+  body,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: "Roboto", sans-serif;
+  }
+
+  .w3-sidebar {
+    z-index: 3;
+    width: 250px;
+    top: 43px;
+    bottom: 0;
+    height: inherit;
+  }
+
+  .content-item {
+    padding: 30px 0;
+    background-color: #FFFFFF;
+  }
+
+  .content-item.grey {
+    background-color: #F0F0F0;
+    padding: 50px 0;
+    height: 100%;
+  }
+
+  .content-item h2 {
+    font-weight: 700;
+    font-size: 35px;
+    line-height: 45px;
+    text-transform: uppercase;
+    margin: 20px 0;
+  }
+
+  .content-item h3 {
+    font-weight: 400;
+    font-size: 20px;
+    color: #555555;
+    margin: 10px 0 15px;
+    padding: 0;
+  }
+
+  .content-headline {
+    height: 1px;
+    text-align: center;
+    margin: 20px 0 70px;
+  }
+
+  .content-headline h2 {
+    background-color: #FFFFFF;
+    display: inline-block;
+    margin: -20px auto 0;
+    padding: 0 20px;
+  }
+
+  .grey .content-headline h2 {
+    background-color: #F0F0F0;
+  }
+
+  .content-headline h3 {
+    font-size: 14px;
+    color: #AAAAAA;
+    display: block;
+  }
+
+
+  #comments {
+    box-shadow: 0 -1px 6px 1px rgba(0, 0, 0, 0.1);
+    background-color: #FFFFFF;
+  }
+
+  #comments form {
+    margin-bottom: 30px;
+  }
+
+  #comments .btn {
+    margin-top: 7px;
+  }
+
+  #comments form fieldset {
+    clear: both;
+  }
+
+  #comments form textarea {
+    height: 100px;
+  }
+
+  #comments .media {
+    border-top: 1px dashed #DDDDDD;
+    padding: 20px 0;
+    margin: 0;
+  }
+
+  #comments .media>.pull-left {
+    margin-right: 20px;
+  }
+
+  #comments .media img {
+    max-width: 100px;
+  }
+
+  #comments .media h4 {
+    margin: 0 0 10px;
+  }
+
+  #comments .media h4 span {
+    font-size: 14px;
+    float: right;
+    color: #999999;
+  }
+
+  #comments .media p {
+    margin-bottom: 15px;
+    text-align: justify;
+  }
+
+  #comments .media-detail {
+    margin: 0;
+  }
+
+  #comments .media-detail li {
+    color: #AAAAAA;
+    font-size: 12px;
+    padding-right: 10px;
+    font-weight: 600;
+  }
+
+  #comments .media-detail a:hover {
+    text-decoration: underline;
+  }
+
+  #comments .media-detail li:last-child {
+    padding-right: 0;
+  }
+
+  #comments .media-detail li i {
+    color: #666666;
+    font-size: 15px;
+    margin-right: 10px;
+  }
+</style>
+
+<body>
+
+  <!-- Navbar -->
+  <div class="w3-top">
+    <div class="w3-bar w3-theme w3-top w3-left-align w3-large">
+      <a class="w3-bar-item w3-button w3-right w3-hide-large w3-hover-white w3-large w3-theme-l1"
+        href="javascript:void(0)" onclick="w3_open()"><i class="fa fa-bars">Menu</i></a>
+      <a href="/" class="w3-bar-item w3-button w3-theme-l1">Home</a>
+      <!-- <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">About</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Values</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">News</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hover-white">Contact</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Clients</a>
+      <a href="#" class="w3-bar-item w3-button w3-hide-small w3-hide-medium w3-hover-white">Partners</a> -->
+    </div>
+  </div>
+
+  <!-- Sidebar -->
+  <nav class="w3-sidebar w3-bar-block w3-collapse w3-large w3-theme-l5 w3-animate-left" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()"
+      class="w3-right w3-xlarge w3-padding-large w3-hover-black w3-hide-large" title="Close Menu">
+      <i class="fa fa-remove"></i>
+    </a>
+    <h4 class="w3-bar-item"><b>Menu</b></h4>
+    <a class="w3-bar-item w3-button w3-hover-black" href="/">Home</a>
+    {% if not request.user %}
+    <a class="w3-bar-item w3-button w3-hover-black" href="/user/login">Login</a>
+    {% endif %}
+    {% if request.user %}
+       {% if  request.user.id == post.author.id %}
+      <a class="w3-bar-item w3-button w3-hover-black" href="/post/edit/{{post.id}}">Edit This Post</a>
+      {% endif %}
+    {% endif %}
+    
+  </nav>
+
+  <!-- Overlay effect when opening sidebar on small screens -->
+  <div class="w3-overlay w3-hide-large" onclick="w3_close()" style="cursor:pointer" title="close side menu"
+    id="myOverlay"></div>
+
+  <!-- Main content: shift it to the right by 250 pixels when the sidebar is visible -->
+  <div class="w3-main" style="margin-left:250px">
+    
+    <div class="w3-row w3-padding-64">
+      <div class="w3-twothird w3-container">
+
+        <h1 class="w3-text-teal">{{post.title|e}}
+        </h1>({% if  request.user.id == post.author.id %}
+    <a class="pull-right" href="/post/edit/{{post.id}}">Edit post</a>
+    {% endif %})
+        <h6 class="w3-text-teal">{% date post.date '%a %b %d, %Y' %}</h6>
+        <p id="post-content">{{post.body|e}}</p>
+      </div>
+      <div class="w3-third w3-container">
+        <!-- <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+        <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p> -->
+      </div>
+      
+    </div>
+    <div style="text-align: center;" class="share-post">  Share this post
+    <a href="https://twitter.com/sharer/?text=">Twitter</a>
+    <a href="https://facebook.com/intent/share/?url=">Facebook</a>
+    </div>
+
+    
+  <!-- COMMENTS -->
+
+  <section class="content-item" id="comments">
+    <div class="container">
+      <div class="row">
+        <div class="col-sm-8">
+
+
+          <h3>{{post.comments.__len__}} Comments</h3>
+
+          <!-- COMMENT 1 - START -->
+          {% for comment in post.comments %}
+          <div class="media">
+            <a class="pull-left" href="#"><img class="media-object"
+                src="https://bootdey.com/img/Content/avatar/avatar1.png" alt=""></a>
+            <div class="media-body">
+              <h4 class="media-heading">{{comment.author.username}}</h4>
+              <p   class="comment-content">{{comment.text}}.</p>
+              <ul class="list-unstyled list-inline media-detail pull-left">
+                <li><i class="fa fa-calendar"></i>{% date comment.date "%a, %b %d, %Y" %}</li>
+              </ul>
+              {% if request.user.id == comment.author.id %}
+              <a href="/comment/edit/{{comment.id}}" class="w3-bar-item w3-green ">edit</a>
+              <a href="/comment/delete/{{comment.id}}?next={{request.path}}" class="w3-bar-item w3-red">delete</a>
+            {% endif %}
+            </div>
+          </div>
+          {% endfor %}
+          <!-- COMMENT 1 - END -->
+         {% if not request.user %}
+        <div>  <a href="/user/login?next={{request.path}}">Login</a> to comment</div>
+        {% else %}
+          <form action='/post/comment/{{post.id}}/' method="POST">
+            <h3 class="pull-left">New Comment</h3>
+            <button type="submit" class=" w3-blue btn btn-normal pull-right">Submit</button>
+            <fieldset>
+              <div class="row">
+                <div class="col-sm-3 col-lg-2 hidden-xs">
+                  <img class="img-responsive" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                </div>
+                <div class="form-group col-xs-12 col-sm-9 col-lg-10">
+                  <textarea class="form-control" id="message" placeholder="Your message" name='comment' required=""></textarea>
+                </div>
+              </div>
+              <b> markdown is supported</b>
+            </fieldset>
+          </form>
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+    <!-- Pagination -->
+    <div class="w3-center w3-padding-32">
+      <div class="w3-bar">
+        <a class="w3-button w3-black" href="#">1</a>
+        <a class="w3-button w3-hover-black" href="#">2</a>
+        <a class="w3-button w3-hover-black" href="#">3</a>
+        <a class="w3-button w3-hover-black" href="#">4</a>
+        <a class="w3-button w3-hover-black" href="#">5</a>
+        <a class="w3-button w3-hover-black" href="#">&raquo;</a>
+      </div>
+    </div>
+
+    <footer id="myFooter">
+      <div class="w3-container w3-theme-l2 w3-padding-32">
+        <h4>Footer</h4>
+      </div>
+
+      <div class="w3-container w3-theme-l1">
+        <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+      </div>
+    </footer>
+
+    <!-- END MAIN -->
+  </div>
+
+
+
+
+  <script>
+    // Get the Sidebar
+    var mySidebar = document.getElementById("mySidebar");
+
+    // Get the DIV with overlay effect
+    var overlayBg = document.getElementById("myOverlay");
+
+    // Toggle between showing and hiding the sidebar, and add overlay effect
+    function w3_open() {
+      if (mySidebar.style.display === 'block') {
+        mySidebar.style.display = 'none';
+        overlayBg.style.display = "none";
+      } else {
+        mySidebar.style.display = 'block';
+        overlayBg.style.display = "block";
+      }
+    }
+
+    // Close the sidebar with the close button
+    function w3_close() {
+      mySidebar.style.display = "none";
+      overlayBg.style.display = "none";
+    }
+  </script>
+  <script type="text/javascript" src="/static/js/markdown.js"></script>
+  <script type="text/javascript" src="/static/js/highlight.js"></script>
+  <script type="text/javascript">
+    window.addEventListener('load',function(){
+    var postElement = document.getElementById('post-content')
+    var comments = document.getElementsByClassName('comment-content')
+    marked.setOptions({
+        highlight: function (code,lang){
+        if (!hljs.getLanguage(lang)){
+          lang = 'plaintext'
+        }
+        return hljs.highlight(code,{language:lang}).value
+          },
+      sanitize:true
+
+    })
+    postElement.innerHTML = marked(postElement.textContent)
+    // hljs.highlightAll()
+    for (comment of comments){
+      comment.innerHTML = marked(comment.textContent)
+    }
+   })
+
+    // mar = marked(post.textContent)
+    // high = hljs.highlight(mark)
+  </script>
+  <script type="text/javascript">
+    var shareElement = document.getElementsByClassName('share-post')[0]
+    if (shareElement){
+    var links = shareElement.getElementsByTagName('a')
+    for (link of links){
+      link.href = link.href+window.location.href
+    }}
+  </script>
+</body>
+
+</html>

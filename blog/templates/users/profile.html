@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}
+    Profile
+  {% endblock %}
+{% block content %}
+
+{% if request.user.username == user.username %}
+
+
+<div class="col-md-6">
+	<a class="" style="text-align: center;" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"aria-controls="collapseExample"> update profile</a>
+{% endif %}
+</div>
+
+<p>
+ <div class="col-md-6">
+<ul class="list-group col-sm"> 
+	<li class="list-group-item active">
+	</li> 
+	<li class="list-group-item"> <b> Name</b> {{user.username}}</li> <li class="list-group-item">
+		<b>Email</b> 
+		  {% if request.user.id == user.id %} 
+		     {{user.email}}
+		   {% else %}
+		     *****
+		     {% endif %}
+	</li>
+	<ul>
+	Posts
+	  {% for post in user.posts %} 
+	   <p> <a href="/post/{{post.id}}/{{post.title|url}}">{{post.title}} </a>
+	   {% if request.user.id == post.author.id %} 
+	   	<ul> <li>
+         <a href="/delete/{{post.id}}">( delete)</a>
+        </li></ul>
+       {% endif %}
+	   </p>
+	  {% endfor %}
+</ul>
+</div></p>
+
+
+
+{% endblock %}

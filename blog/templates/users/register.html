@@ -1,0 +1,112 @@
+{% extends 'base.html'}
+{% block title %}Register {% endblock %}
+<!-- Bootstrap core CSS -->
+{% block css super %}
+<link href="/static/css/bootstrap.css" rel="stylesheet">
+<style>
+  .bd-placeholder-img {
+    font-size: 1.125rem;
+    text-anchor: middle;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+  }
+
+  @media (min-width: 768px) {
+    .bd-placeholder-img-lg {
+      font-size: 3.5rem;
+    }
+  }
+</style>
+<!-- Custom styles for this template -->
+<link href="form-validation.css" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+
+<div class="container">
+  <main>
+    <div class="row g-5">
+      <div class="col-md-7 col-lg-8">
+        <h4 class="mb-3"></h4>
+        {% for msg in messages %}
+        <div style="color: red;">{{msg}}</div>
+        {% endfor %}
+        <form class="needs-validation" method="POST" novalidate>
+          <div class="row g-3">
+
+            <div class="col-6s">
+              <label for="username" class="form-label">Username</label>
+              <div class="">
+
+                <input type="text" class="form-control" name="username" placeholder="Username" required>
+                <p class="invalid-feedback" style="color:red;" hidden>
+                  Your username is required.
+                </p>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label for="email" class="form-label">Email </label>
+              <input type="email" class="form-control" name="email" placeholder="you@example.com" required>
+              <p class="invalid-feedback" style="color:red;" hidden>
+                Please enter a valid email address
+              </p>
+            </div>
+
+            <div class="col-6">
+              <label for="password" class="form-label">password</label>
+              <div class="">
+                <input type="password" class="form-control" name="password" placeholder="password" required>
+                <p class="invalid-feedback" style="color:red;" hidden>
+                  Your password is required.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <hr class="my-4">
+
+          <button class="w-100 btn btn-primary btn-lg" type="submit">submit</button>
+        </form>
+      </div>
+    </div>
+  </main>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+  var form = document.querySelector('form')
+  form.addEventListener('submit', function (event) {
+    if (!form.checkValidity()) {
+      event.preventDefault()
+      for (element of form.elements) {
+        if (element.tagName.toLowerCase() == 'button') {
+          continue
+        }
+        let err = element.parentElement.querySelector('.invalid-feedback')
+        if (!element.checkValidity()) {
+
+          if (err) {
+            element.style.borderColor = 'red'
+
+            err.hidden = false
+          }
+
+        } else {
+          element.style.borderColor = ''
+
+          err.hidden = true
+
+        }
+
+
+      }
+    }
+
+
+  })
+</script>
+{% endblock %}
