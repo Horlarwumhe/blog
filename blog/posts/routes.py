@@ -80,7 +80,8 @@ def add_comment(post_id):
     db.commit()
     return redirect('/post/%s' % post.id)
 
-
+# /post/edit/id
+# /post/delete/id
 @app.route('/<model>/<opt>/<int:id>',methods=['GET','POST'])
 def edit_post(model, opt, id):
     if not request.user:
@@ -108,8 +109,15 @@ def edit_post(model, opt, id):
             if m == 'post':
                 result.body = request.post.get('body', result.body)
                 result.title = request.post.get('title', result.title)
-                return redirect('/post/%s'%result.id)
+                title = result.title.replace(' ','-')
+                db.add(result)
+                db.commit()
+                return redirect('/post/%s/%s'%(result.id,title))
             else:
                 result.text = request.post.get('text', result.text)
-                redirect('/post/%s'%result.post.id)
+                db.add(result)
+                db.commit()
+                print('commited')
+                title = result.post.title.replace(' ','-')
+                return redirect('/post/%s/%s'%(result.post.id,title))
         return render_template('posts/edit.html', post=result, model=m)

@@ -6,7 +6,7 @@ import os
 
 from glass import GlassApp
 from glass import request, session, render_template
-from glass.response import FileResponse, flash, messages
+from glass.response import FileResponse, flash
 
 
 from redis import Redis
@@ -16,8 +16,10 @@ import blog.models as models
 from blog.models import User, Post
 import blog.tags as tags
 from .utils import Paginator
+from .config import Config
 
 app = GlassApp()
+app.config.from_object(Config)
 queue = Queue(connection=Redis())
 
 logger = logging.getLogger("glass.app")
@@ -28,18 +30,10 @@ file.setFormatter(
     logging.Formatter("%(asctime)s : %(message)s ",
                       datefmt="%d/%m/%Y %H:%M:%S %p"))
 
-DB = os.environ.get('DB_ENGINE')
+DB = app.config['DB_ENGINE']
 if not DB:
     logger.critical('database engine not found')
     exit(1)
-
-app.config["DB_ENGINE"] = DB
-app.config["TEMPLATES_FOLDER"] = os.path.join(os.getcwd(), "blog", "templates")
-app.config["STATIC_FOLDER"] = os.path.join(os.getcwd(), "blog", "statics")
-# app.config['TEMPLATE_BACKEND'] = 'jinja'
-app.config["DEBUG"] = False
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY','')
-app.config['SESSION_COOKIE_MAXAGE'] = '3675443'
 
 
 @app.error(404)
@@ -52,10 +46,11 @@ def load_user():
     user_id = session.get("user_id")
     if not user_id:
         request.user = None
-    user = db.query(User).filter(User.id == user_id).first()
-    if not user:
-        session.pop("user_id")
-    request.user = user
+    else:
+        user = db.query(User).filter(User.id == user_id).first()
+        if not user:
+            session.pop("user_id")
+        request.user = user
 
 
 @app.error(500)
@@ -93,17 +88,25 @@ def test():
 
 
 app.template_env.tags["date"] = tags.date
+app.template_env.tags['current_time'] = tags.now
 
 
 @app.template_env.filter("show_part")
 def part(value):
-    return value[:350]
+    print('\n'.join(value.split('\n')[:5]))
+    print(value.split('\n'))
+    return '\n'.join(value.split('\n')[:5])
+    # return value[:350]
 
+@app.template_env.filter('e')
+def escape(s):
+    return html.escape(s,False)
 
 @app.template_env.filter("markdown")
-def mark(value):
-    value = html.escape(value)
-    return markdown.markdown(value)
+def mark(text):
+    text = html.escape(text)
+    text = markdown.markdown(text)
+    return text
 
 
 @app.template_env.filter("url")
@@ -112,7 +115,7 @@ def url(value):
     return value[:30]
 
 
-app.template_env.globals['messages'] = messages
+# app.template_env.globals
 
 
 @app.template_env.filter('call')

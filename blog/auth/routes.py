@@ -26,7 +26,7 @@ def login():
                 error = 'invalid password'
             else:
                 session['user_id'] = user.id
-                queue.enqueue(task.on_login,user,retry=Retry(max=3))
+                task.send_login_mail(user)
                 next_page = request.query.get('next', '/')
                 return redirect(next_page)
     return render_template('auth/login.html', error=error)

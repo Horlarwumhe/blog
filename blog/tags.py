@@ -24,3 +24,22 @@ class DateNode(Node):
         if isinstance(obj, int):
             return datetime.fromtimestamp(obj).strftime(fmt)
         return ''
+
+
+def now(parser):
+    _ , args = parser.get_next_token().clean_tag()
+    if args:
+        fmt = args
+    else:
+        fmt = '%b %d,%Y %H:%M %p'
+    fmt = fmt.strip('"').strip("'")
+    return NowNode(fmt)
+
+class NowNode(Node):
+
+    def __init__(self,fmt):
+        self.fmt = fmt
+
+    def render(self,ctx,env=None):
+        return datetime.now().strftime(self.fmt)
+
