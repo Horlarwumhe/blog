@@ -1,6 +1,7 @@
 import hashlib
 from datetime import datetime
 import time
+import os
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
@@ -10,7 +11,7 @@ from sqlalchemy import create_engine
 
 from blog.utils import url_b64encode,url_b64decode
 Base = declarative_base()
-secret = '<some app secret>'
+secret = os.environ.get('SECRET_KEY',"<secret>")
 
 
 class User(Base):
@@ -30,6 +31,9 @@ class User(Base):
     def check_password(self, password):
         password = self.hash_password(password)
         return self.password == password
+
+    def set_password(self,password):
+        self.password = self.hash_password(password)
 
     def create_reset_token(self, ts=None):
         if ts:
@@ -65,7 +69,7 @@ class User(Base):
         token = ''.join([secret,str(self.id),self.email,self.password])
         user_id = url_b64encode(str(self.id))
         token = hashlib.sha1(token.encode()).hexdigest()
-        return '%s.%s'%(user_id,url_b64encode(token))[:35]
+        return '%s.%s'%(user_id,url_b64encode(token))[:25]
 
 class Post(Base):
     __tablename__ = 'posts'

@@ -1,8 +1,10 @@
- from glass import request,redirect
 import base64
 from binascii import Error as BinasciiError
-
+import re
+import os
 from math import ceil
+from glass import request,redirect
+
 
 class Paginator:
 
@@ -147,3 +149,20 @@ def url_b64decode(s):
         return base64.urlsafe_b64decode(s.ljust(len(s) + len(s) % 4, b'='))
     except (LookupError, BinasciiError) as e:
         raise ValueError(e)
+
+
+def secure_filename(filename):
+    #Werkzeug
+    _filename_ascii_strip_re = re.compile(r"[^A-Za-z0-9_.-]")
+    if isinstance(filename, str):
+        from unicodedata import normalize
+
+        filename = normalize("NFKD", filename).encode("ascii", "ignore")
+        filename = filename.decode()
+    for sep in os.path.sep, os.path.altsep:
+        if sep:
+            filename = filename.replace(sep, " ")
+    filename = str(_filename_ascii_strip_re.sub("", "_".join(filename.split()))).strip(
+        "._"
+    )
+    return filename

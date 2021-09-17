@@ -11,6 +11,7 @@ def date(parser):
 
 
 class DateNode(Node):
+    # {% date obj fmt %}
     def __init__(self, obj, fmt):
         self.obj = obj
         self.fmt = fmt
@@ -36,7 +37,7 @@ def now(parser):
     return NowNode(fmt)
 
 class NowNode(Node):
-
+    #  {% current_time fmt %}
     def __init__(self,fmt):
         self.fmt = fmt
 

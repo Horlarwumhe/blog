@@ -7,6 +7,9 @@ pip install -r requirements.txt || \
 export DB_ENGINE="postgresql://blog:#blog@localhost:5432/blog" 
 export SECRET_KEY="60d7cbe4086ffefaf3791b62978054"
 export PORT=3000
+export MAILGUN_DOMAIN='mail.horlarwumhe.me'
+export  MAILGUN_SMTP_PASSWORD=''
+export MAILGUN_SMTP_USERNAME=''
 gunicorn --error-logfile logs/gunicorn.error.log \
        --access-logfile logs/gunicorn.access.log  main:app -D
 

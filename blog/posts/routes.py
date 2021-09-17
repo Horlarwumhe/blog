@@ -4,6 +4,8 @@ from sqlalchemy.orm import query_expression
 from blog.main import app, db
 from blog.models import Comment, Post
 from blog import utils
+from blog.utils import secure_filename
+from urllib.parse import unquote
 
 import os
 
@@ -39,10 +41,9 @@ def create_post():
                     ext = name.rsplit('.', 1)[-1]
                     if not os.path.exists('blog/uploads/posts'):
                         os.makedirs('blog/uploads/posts')
-                    path = 'blog/uploads/posts/%s.%s' % (title.replace(
-                        ' ', '_'), ext)
-                    image_url = '/media/posts/%s.%s' % (title.replace(
-                        ' ', '_'), ext)
+                    path_name = secure_filename(title)
+                    path = 'blog/uploads/posts/%s.%s' %(path_name,ext)
+                    image_url = '/media/posts/%s.%s' % (path_name,ext)
                     file.save_as(path)
             post = Post(title=title,
                         body=body,
@@ -50,8 +51,9 @@ def create_post():
                         image_url=image_url)
             db.add(post)
             db.commit()
+            title = secure_filename(post.title)
             return redirect('/post/%s/%s' %
-                            (post.id, post.title.replace(' ', '-')[:30]))
+                            (post.id, title))
     return render_template('posts/create.html', error=error)
 
 

@@ -3,6 +3,7 @@ import markdown
 import logging
 from logging.handlers import TimedRotatingFileHandler
 import os
+import urllib.parse
 
 from glass import GlassApp
 from glass import request, session, render_template
@@ -16,6 +17,7 @@ import blog.models as models
 from blog.models import User, Post
 import blog.tags as tags
 from .utils import Paginator
+from .utils import secure_filename
 from .config import Config
 
 app = GlassApp()
@@ -93,14 +95,12 @@ app.template_env.tags['current_time'] = tags.now
 
 @app.template_env.filter("show_part")
 def part(value):
-    print('\n'.join(value.split('\n')[:5]))
-    print(value.split('\n'))
     return '\n'.join(value.split('\n')[:5])
     # return value[:350]
 
 @app.template_env.filter('e')
 def escape(s):
-    return html.escape(s,False)
+    return html.escape(s,True)
 
 @app.template_env.filter("markdown")
 def mark(text):
@@ -108,11 +108,15 @@ def mark(text):
     text = markdown.markdown(text)
     return text
 
+@app.template_env.filter('urlquote')
+def quote(text):
+    return urllib.parse.quote(text,'')
 
 @app.template_env.filter("url")
 def url(value):
-    value = "-".join(value.split())
-    return value[:30]
+    value = ' '.join(value.split()[:5])
+    value = secure_filename(value).replace('_','-')
+    return value
 
 
 # app.template_env.globals

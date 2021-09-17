@@ -24,6 +24,9 @@ def login():
                 error = 'username not found'
             elif not user.check_password(password):
                 error = 'invalid password'
+            if not user.verified:
+                flash("Account has not been verified.")
+                return redirect('/u/confirm')
             else:
                 session['user_id'] = user.id
                 task.send_login_mail(user)

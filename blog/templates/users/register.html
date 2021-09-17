@@ -70,6 +70,11 @@
           <button class="w-100 btn btn-primary btn-lg" type="submit">submit</button>
         </form>
       </div>
+      {% if mailsent %}
+      <div class="container" style="background-color:#f1f1f1">
+          <span class="psw">Didn't  <a href="/u/confirm">get mail?</a></span>
+      </div>
+      {% endif %}
     </div>
   </main>
 </div>
