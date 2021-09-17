@@ -1,0 +1,75 @@
+{% extends 'base.html'}
+{% block title %}Login {% endblock %}
+
+{% block css super %}
+
+<style>
+  form {
+    border: 3px solid #f1f1f1;
+  }
+
+  input[type=email],
+  input[type=password] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+  }
+
+  button {
+    background-color: #04AA6D;
+    color: white;
+    padding: 14px 20px;
+    margin: 8px 0;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+
+  button:hover {
+    opacity: 0.8;
+  }
+
+  .container {
+    padding: 16px;
+  }
+
+  span.psw {
+    float: right;
+    padding-top: 16px;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<form method="post">
+  <div class="imgcontainer">
+    <!-- <img src="img_avatar2.png" alt="Avatar" class="avatar"> -->
+  </div>
+  
+    {% for msg in get_flash_messages %}
+       <div style="padding-left: 40%; color: red">{{msg}}</div>
+      {% endfor %}
+  
+  <div style="padding-left: 40%; color: red">Your account has not been verified.</div>
+  <div style="padding-left: 40%; color: red">Enter your account email to verify.</div>
+  <div class="container">
+    <label for="email"><b>Email</b></label>
+    <input type="email" placeholder="Enter Your Email" name="email" required>
+
+
+
+    <button type="submit">Confirm Account</button>
+  </div>
+
+  <div class="container" style="background-color:#f1f1f1">
+  </div>
+</form>
+
+{% endblock %}
+
+{% block js %}
+{% endblock %}
