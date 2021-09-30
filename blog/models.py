@@ -73,6 +73,7 @@ class User(Base):
         return ('%s.%s' % (user_id, url_b64encode(token)))[:25]
 
 
+
 class Post(Base):
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True)
