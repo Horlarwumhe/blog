@@ -28,10 +28,11 @@
 
     <button type="submit">Submit</button>
   </div>
-
+{% if mailsent %}
   <div class="container" style="background-color:#f1f1f1; padding-left: 60%;"> 
-    <span class="">Already have <a href="/user/login">account?</a></span>
+    <span class=""> <a href="{% url_for 'verify_account' %}">Didnt get email?</a></span>
   </div>
+{% endif %}
 </form>
 {% endblock %}
 
