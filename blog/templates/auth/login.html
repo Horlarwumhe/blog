@@ -2,45 +2,7 @@
 {% block title %}Login {% endblock %}
 
 {% block css super %}
-
-<style>
-  form {
-    border: 3px solid #f1f1f1;
-  }
-
-  input[type=text],
-  input[type=password] {
-    width: 100%;
-    padding: 12px 20px;
-    margin: 8px 0;
-    display: inline-block;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-  }
-
-  button {
-    background-color: #04AA6D;
-    color: white;
-    padding: 14px 20px;
-    margin: 8px 0;
-    border: none;
-    cursor: pointer;
-    width: 100%;
-  }
-
-  button:hover {
-    opacity: 0.8;
-  }
-
-  .container {
-    padding: 16px;
-  }
-
-  span.psw {
-    float: right;
-    padding-top: 16px;
-  }
-</style>
+<link rel="stylesheet" type="text/css" href="/static/css/form.css">
 {% endblock %}
 
 {% block content %}
@@ -60,13 +22,13 @@
     <input type="password" placeholder="Enter Password" name="password" required>
 
     <button type="submit">Login</button>
-    <label>
+    <!-- <label>
       <input type="checkbox" checked="checked" name="remember"> Remember me
-    </label>
+    </label> -->
   </div>
 
-  <div class="container" style="background-color:#f1f1f1">
-    <span class="psw">Forgot <a href="/u/reset_password">password?</a></span>
+  <div class="container" style="text-align: right;">
+    <span >Forgot <a href="/u/reset_password">password?</a></span>
   </div>
 </form>
 {% endblock %}

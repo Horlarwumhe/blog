@@ -1,6 +1,9 @@
 <b>Hello {{user.username}}</b>
 
-You recently signup on <a href="blog.horlarwumhe.me"> blog </a> with this
-email {{user.email}} <a href="{{app.config.DOMAIN_NAME}}/u/confirm/{{token}}"> click </a> to activate your account.
+You recently signup on <a href="{{app.config.MAIL_DOMAIN}}"> Horlarwumhe's blog </a> with this
+email {{user.email}}. To complete your registration, <a href="{{app.config.MAIL_DOMAIN}}{% url_for 'verify_account_token' token=token %}"> click </a> to activate your account.
 
 If you dont recognize this,kindly ignore this. Possibly by mistake, someone register with your email.
+
+<p> Yours sincerely,</p>
+<p>Horlarwumhe's blog</p>

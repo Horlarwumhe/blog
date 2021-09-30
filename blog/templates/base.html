@@ -5,7 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 {% block css %}
 <link rel="stylesheet" href="/static/css/w3.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway"> -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+
 <style>
   body,
   h1,
@@ -29,16 +31,18 @@ and is wrapped around the whole page content, except for the footer in this exam
     <!-- Header -->
     <header class="w3-container w3-center w3-padding-32">
       <h1><b>MY BLOG</b></h1>
-      <p>Welcome {% if request.user %} <b><a href='/profile/{{request.user.username}}'>{{request.user.username}}</a></b>
+      <p>Welcome {% if request.user %} <b><a href='{% url_for "userprofile" username=request.user.username %}'>{{request.user.username}}</a></b>
         {% else %} guest {%endif%} <a href="/"><span class="w3-tag">(Home)</span></a></p>
       <p>
+        {% block header_content %}
         {% if request.user %}
-        <a href="/user/logout">logout</a>
+        <a href="{% url_for 'logout' %}">logout</a>
         {% else %}
         <a href="/user/login">login</a>
-        <a href='/user/register'>register</a>
+        <a href='{% url_for "register" %}'>register</a>
         {% endif %}
-        <a href="/post/create"> New Post </a>
+        <a href="{% url_for 'create_post' %}"> New Post </a>
+        {% endblock %}
       </p>
     </header>
 
@@ -50,7 +54,6 @@ and is wrapped around the whole page content, except for the footer in this exam
     {% block content %}
 
     {% endblock %}
-
   </div>
   {% block js %}
   {% endblock %}

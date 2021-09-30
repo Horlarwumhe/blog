@@ -5,8 +5,9 @@ from blog.utils import url_b64decode, login_require
 from blog import tasks
 
 
-@app.route('/profile')
-@app.route('/profile/<username>')
+@app.route('/profile',view_name='profileold')
+@app.route('/profile/<username>',view_name='profile')
+@app.route('/u/profile/<username>',view_name='userprofile')
 def userprofile(username=None):
     if not request.user and not username:
         return redirect('/user/login')
@@ -22,7 +23,7 @@ def userprofile(username=None):
 @app.route('/user/register', methods=['GET', 'POST'])
 def register():
     error = ''
-    msgsent = False
+    mailsent = False
     if request.user:
         return redirect('/')
     if request.method == "POST":
@@ -44,16 +45,13 @@ def register():
                 user.verified = False
                 db.add(user)
                 db.commit()
-                try:
-                    tasks.send_registration_token(user)
-                except Exception as e:
-                    error = 'Failed send email. Internal Server Error'
-                else:
-                    msgsent = True
-                    flash("check your email to activate your account")
+                tasks.send_registration_token(user)
+                mailsent = True
+                flash("check your email to activate your account")
     if error:
         flash(error)
-    return render_template('users/register.html', error=error, msgsent=msgsent)
+    return render_template('users/register.html', error=error,
+           mailsent=mailsent)
 
 
 @app.route('/u/reset_password', methods=['GET', 'POST'])
@@ -71,8 +69,8 @@ def reset_password():
     return render_template('users/reset_password.html', {})
 
 
-@app.route('/reset/<user_id>/<token>')
-@app.route('/reset_password/<user_id>/<token>')
+@app.route('/reset/<user_id>/<token>',view_name='reset')
+@app.route('/reset_password/<user_id>/<token>',view_name='do_reset')
 def do_reset(user_id, token):
     try:
         user_id = int(url_b64decode(user_id))
@@ -91,15 +89,21 @@ def do_reset(user_id, token):
 @app.route('/u/change_password', methods=['GET', 'POST'])
 @login_require
 def change_password():
+    error = ''
     if request.method == 'POST':
-        password = request.post.get('password')
-        user = db.query(User).filter(User.id == request.user.id)
-        user.set_password(password)
-        db.add(user)
-        db.commit()
-        flash("Password changed")
-        return redirect('/')
-    return render_template('users/set_password.html')
+        old_password = request.post.get('oldpassword')
+        if request.user.hash_password(old_password) != request.user.password:
+            error = "Incorrect password"
+        else:
+            password = request.post.get('password')
+            user = db.query(User).filter(User.id == request.user.id).first()
+            user.set_password(password)
+            db.add(user)
+            db.commit()
+            flash("Password changed")
+            app.redis.delete('user-%s'%request.user.id)
+            return redirect('/')
+    return render_template('users/change_password.html',error=error)
 
 
 @app.route('/u/set_password', methods=['GET', 'POST'])
@@ -108,7 +112,8 @@ def set_password():
     if not token:
         return redirect('/')
     if request.method == 'POST':
-        user_id = session.get('user_reset_id')
+        user_id = session.pop('user_reset_id')
+        session.pop('token')
         if not user_id:
             return redirect('/')
         user = db.query(User).filter(User.id == int(user_id)).first()
@@ -119,27 +124,27 @@ def set_password():
             user.set_password(password)
             db.add(user)
             db.commit()
-            session.pop('token')
-            session.pop('user_reset_id')
+            app.redis.delete('user-%s'%user.id)
             flash('Password changed. login to continue')
             return redirect('/user/login')
     return render_template('users/set_password.html')
 
 
-@app.route('/u/confirm', methods=['GET', 'POST'])
-@app.route('/u/confirm/<token>')
-def confirm_reg(token=None):
-    if token is None:
-        error = ''
-        if request.method == 'POST':
-            email = request.post.get('email')
-            user = db.query(User).filter(User.email == email).first()
-            if not user:
-                error = "user not found"
-            else:
-                tasks.send_registration_token(user)
-                flash("check your email to activate your account")
-        return render_template('users/confirm_account.html', error=error)
+@app.route('/u/verify_account', methods=['GET', 'POST'])
+def verify_account():
+    error = ''
+    if request.method == 'POST':
+        email = request.post.get('email')
+        user = db.query(User).filter(User.email == email).first()
+        if not user:
+            error = "user not found"
+        else:
+            tasks.send_registration_token(user)
+            flash("check your email to activate your account")
+    return render_template('users/verify_account.html', error=error)
+
+@app.route('/u/verify_account/<token>')
+def verify_account_token(token):
     try:
         user_id, _ = token.split('.', 1)
         user_id = int(url_b64decode(user_id))
@@ -155,5 +160,16 @@ def confirm_reg(token=None):
     db.add(user)
     db.commit()
     session['user_id'] = user.id
-    print('account verified sucessful')
     return redirect('/')
+
+@app.route('/u/<username>')
+def userprofile(username=None):
+    if not request.user and not username:
+        return redirect('/user/login?next=%s'%request.path)
+    if not username:
+        user = request.user
+    else:
+        user = db.query(User).filter(User.username == username).first()
+    if not user:
+        return 'user not found %s' % username, 404
+    return render_template('users/profile.html', user=user)

@@ -1,8 +1,8 @@
 {% extends 'base.html'}
-{% block title %}Account Confirmation {% endblock %}
+{% block title %}Account Verify {% endblock %}
 
 {% block css super %}
- 
+<link rel="stylesheet" type="text/css" href="/static/css/form.css">
 {% endblock %}
 
 {% block content %}
@@ -11,25 +11,20 @@
   <div class="imgcontainer">
     <!-- <img src="img_avatar2.png" alt="Avatar" class="avatar"> -->
   </div>
-  
-    {% for msg in get_flash_messages %}
-       <div style="padding-left: 40%; color: red">{{msg}}</div>
-      {% endfor %}
-  
-  <div style="padding-left: 40%;">Enter your account email to verify.</div>
+  <p style="padding-left: 30%"> Verify Your Account </p>
+  <div style="padding-left: 40%; color: red">{{error}}</div>
   <div class="container">
     <label for="email"><b>Email</b></label>
     <input type="email" placeholder="Enter Your Email" name="email" required>
 
 
 
-    <button type="submit">Confirm Account</button>
+    <button type="submit">Activate</button>
   </div>
 
   <div class="container" style="background-color:#f1f1f1">
   </div>
 </form>
-
 {% endblock %}
 
 {% block js %}

@@ -4,14 +4,14 @@ import time
 import os
 
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, String, Integer, ForeignKey, DateTime
+from sqlalchemy import Column, String, Integer, ForeignKey, DateTime, Boolean
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 
-from blog.utils import url_b64encode,url_b64decode
+from blog.utils import url_b64encode, url_b64decode
 Base = declarative_base()
-secret = os.environ.get('SECRET_KEY',"<secret>")
+secret = os.environ.get('SECRET_KEY', "<secret>")
 
 
 class User(Base):
@@ -20,6 +20,7 @@ class User(Base):
     username = Column(String, nullable=False, unique=True)
     email = Column(String, nullable=False, unique=True)
     password = Column(String, nullable=False)
+    verified = Column(Boolean, default=False)
 
     def __repr__(self):
         return '<User id=%s, username=%s' % (self.id, self.username)
@@ -32,7 +33,7 @@ class User(Base):
         password = self.hash_password(password)
         return self.password == password
 
-    def set_password(self,password):
+    def set_password(self, password):
         self.password = self.hash_password(password)
 
     def create_reset_token(self, ts=None):
@@ -66,10 +67,11 @@ class User(Base):
         return True
 
     def create_reg_token(self):
-        token = ''.join([secret,str(self.id),self.email,self.password])
+        token = ''.join([secret, str(self.id), self.email, self.password])
         user_id = url_b64encode(str(self.id))
         token = hashlib.sha1(token.encode()).hexdigest()
-        return '%s.%s'%(user_id,url_b64encode(token))[:25]
+        return ('%s.%s' % (user_id, url_b64encode(token)))[:25]
+
 
 class Post(Base):
     __tablename__ = 'posts'
@@ -80,6 +82,7 @@ class Post(Base):
     date = Column(DateTime, default=datetime.utcnow)
     body = Column(String, nullable=False)
     image_url = Column(String)
+    publish = Column(Boolean,default=True)
 
     def __repr__(self):
         if self.author:
@@ -109,6 +112,6 @@ class Comment(Base):
 
 def create_db(app):
     engine = create_engine(app.config['DB_ENGINE'] or 'sqlite:memory')
-    Base.metadata.create_all(engine)
+    # Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     return Session()

@@ -10,7 +10,7 @@ from urllib.parse import unquote
 import os
 
 
-@app.route('/post/<int:post_id>')
+# @app.route('/post/<int:post_id>')
 @app.route('/post/<int:post_id>/<str:title>')
 def get_post(post_id, title=''):
     post = db.query(Post).filter_by(id=post_id).first()
@@ -20,7 +20,7 @@ def get_post(post_id, title=''):
     return render_template('posts/post.html', post=post)
 
 
-@app.route('/post/create', methods=['POST', 'GET'])
+@app.route('/post/create', methods=['POST', 'GET'],view_name='create_post')
 @utils.login_require
 def create_post():
     if not request.user:
@@ -30,6 +30,7 @@ def create_post():
         post = {**request.post}
         title = post.get('title')
         body = post.get('body')
+        publish = bool(post.get('publish'))
         if not all((title, body)):
             error = ' enter title and body'
         else:
@@ -37,23 +38,26 @@ def create_post():
             if not image_url:
                 file = request.files.get('image')
                 if file:
+                    print('file hrer file.name', file.filename)
                     name = file.filename
                     ext = name.rsplit('.', 1)[-1]
                     if not os.path.exists('blog/uploads/posts'):
                         os.makedirs('blog/uploads/posts')
                     path_name = secure_filename(title)
-                    path = 'blog/uploads/posts/%s.%s' %(path_name,ext)
-                    image_url = '/media/posts/%s.%s' % (path_name,ext)
+                    path = 'blog/uploads/posts/%s.%s' % (path_name, ext)
+                    image_url = '/media/posts/%s.%s' % (path_name, ext)
                     file.save_as(path)
+                else:
+                    print('no file upload..')
             post = Post(title=title,
                         body=body,
                         author_id=request.user.id,
-                        image_url=image_url)
+                        image_url=image_url,
+                        publish=publish)
             db.add(post)
             db.commit()
             title = secure_filename(post.title)
-            return redirect('/post/%s/%s' %
-                            (post.id, title))
+            return redirect('/post/%s/%s' % (post.id, title))
     return render_template('posts/create.html', error=error)
 
 
@@ -73,6 +77,8 @@ def delete_post(post_id, title=''):
 @app.route('/post/comment/<int:post_id>/', methods=['GET', 'POST'])
 @utils.login_require
 def add_comment(post_id):
+    if not request.method == 'POST':
+        return "...."
     post = db.query(Post).filter(Post.id == post_id).first()
     if not post:
         return redirect('/')
@@ -80,12 +86,14 @@ def add_comment(post_id):
     comment = Comment(post_id=post.id, author_id=request.user.id, text=text)
     db.add(comment)
     db.commit()
-    return redirect('/post/%s' % post.id)
+    return redirect('/post/%s/%s' % (post.id, secure_filename(post.title)))
+
 
 # /post/edit/id
-# /post/delete/id
-@app.route('/<model>/<opt>/<int:id>',methods=['GET','POST'])
-def edit_post(model, opt, id):
+# / post/delete/id
+@app.route('/<model>/<opt>/<int:id>/<title>', methods=['GET', 'POST'])
+@app.route('/<model>/<opt>/<int:id>', methods=['GET', 'POST'])
+def edit_post(model, opt, id, title=None):
     if not request.user:
         return redirect('/user/login')
     if model == 'post':
@@ -111,15 +119,20 @@ def edit_post(model, opt, id):
             if m == 'post':
                 result.body = request.post.get('body', result.body)
                 result.title = request.post.get('title', result.title)
-                title = result.title.replace(' ','-')
+                title = secure_filename(result.title)
+                result.publish = bool(request.post.get('publish'))
+                print(request.post.get('imageurl'), '======')
+                result.image_url = (request.post.get('imageurl')
+                                    or result.image_url)
+                print(result.image_url, '--------')
                 db.add(result)
                 db.commit()
-                return redirect('/post/%s/%s'%(result.id,title))
+                return redirect('/post/%s/%s' % (result.id, title))
             else:
                 result.text = request.post.get('text', result.text)
                 db.add(result)
                 db.commit()
                 print('commited')
-                title = result.post.title.replace(' ','-')
-                return redirect('/post/%s/%s'%(result.post.id,title))
+                title = result.post.title.replace(' ', '-')
+                return redirect('/post/%s/%s' % (result.post.id, title))
         return render_template('posts/edit.html', post=result, model=m)

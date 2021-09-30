@@ -1,11 +1,26 @@
 {% extends "base.html" %}
 <!-- Grid -->
-{% block content %}
-<div class="w3-row">
+{% block css super %}
+<link rel="stylesheet" type="text/css" href="/static/css/search.css">
+<style type="text/css">
 
+</style>
+{% endblock %}
+{% block content %}
+<div style="padding-left: 50px" class="dropdown">
+  <div id="myDropdown" class="dropdown-content">
+    <input type="text" placeholder="Find blog post.." id="myInput" onkeyup="filterFunction()">
+    <p id="notFound" style="display: none;">
+        <b> No Post Found </b>
+      </p>
+    <p class="foundPost">
+    <p>
+  </div>
+</div>
+<div class="w3-row">
   <!-- Blog entries -->
   <div class="w3-col l8 s12">
-    {% for post in page %}
+    {% for post in page %} 
     <div class="w3-card-4 w3-margin w3-white">
       {% if post.image_url %}
       <img src="{{post.image_url}}" alt="Nature" style="width:100%">
@@ -23,21 +38,22 @@
         <div class="w3-row">
           <div class="w3-col m8 s12">
             <p><button class="w3-button w3-padding-large w3-white w3-border"><b>
-                  <a href='/post/{{post.id}}/{{post.title|url}}'>READ MORE &raquo;</a></b></button></p>
-          </div>
-          <div class="w3-col m4 ">
-            <p><span class="w3-padding-large w3-right"><b>Comments &nbsp;</b> <span
-                  class="w3-tag">{{post.comments.__len__}}</span></span></p>
+                  <a href='{% url_for "get_post" title=post.title|url post_id=post.id %}' >READ MORE &raquo;</a></b></button></p>
           </div>
         </div>
       </div>
     </div>
     <hr>
     {% else %}
-    No post available
-
+    <h3 class='' style="padding-left: 40%;">
+      {% if request.args.query %}
+        No post matches <span class="w3-tag">{{request.args.query}}</span>
+      {% else %}
+        No post available
+        }
+      {% endif  %}
+    </h3> 
     {% endfor %}
-
     <!-- END BLOG ENTRIES -->
   </div>
   <!-- Posts -->
@@ -77,28 +93,67 @@
 
 <!-- END w3-content -->
 </div>
-<script type="text/javascript" src="/static/js/markdown.js"></script>
-<script type="text/javascript">
-  var posts = document.getElementsByClassName('post-body-part')
-  for (post of posts) {
-    post.innerHTML = marked(post.textContent)
-  }
-
-
-</script>
 <!-- Footer -->
 <footer class="w3-container w3-dark-grey w3-padding-32 w3-margin-top">
   <button
     class="w3-button w3-black {%if not page.has_previous %} w3-disabled{%endif%} w3-padding-large w3-margin-bottom"><a
       href='/?page={{page.previous_page_number}}'>Previous &laquo;</a></button>
   <button class="w3-button w3-black {%if not page.has_next %} w3-disabled{%endif%} w3-padding-large w3-margin-bottom">
-    <a href='/?page={{page.next_page_number}}'>Next &raquo;</button>
-  <p>Powered by <a href='https://github.com/Horlarwumhe/glass' target="_blank">Glass </a></p>
-  <p>
-    using <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a> template.
-  </p>
-  <p></p>
+    <a href='/?page={{page.next_page_number}}'>Next &raquo;</a></button>
+    <div style="padding-left: 20%;">
+      <p>Powered by <a href='https://github.com/Horlarwumhe/glass' target="_blank">Glass </a> using <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a> template.
+      </p>
+    </div>
 </footer>
+{% endblock %}
 
-
+{% block js super %}
+<script type="text/javascript" src="/static/js/markdown.js"></script>
+<script type="text/javascript">
+  var posts = document.getElementsByClassName('post-body-part')
+  for (post of posts) {
+    post.innerHTML = marked(post.textContent)
+  }
+</script>
+<script type="text/javascript">
+  function myFunction() {
+  document.getElementById("myDropdown").classList.toggle("show");
+}
+var g = [];
+function filterFunction() {
+  var input, filter,  postElement, div;
+  input = document.getElementById("myInput");
+  filter = input.value.toLowerCase();
+  div = document.getElementById("myDropdown");
+  postElement = div.getElementsByClassName("foundPost")[0];
+  var text = div.querySelector('#notFound')
+  text.style.display = 'none'
+  while (postElement.firstChild){
+    postElement.firstChild.remove()
+  }
+  if (filter.trim().length < 3){
+    return
+  }
+  fetch('/p/search?q='+filter)
+    .then(function(response){
+      g.push(response)
+      return response.json()
+    })
+    .then(function(json){
+      var posts = json.posts
+      if (posts.length < 1){
+        // console.log('less than 1')
+        text.style.display = 'block'
+        return 
+      }
+      for (i = 0; i < posts.length;i++){
+        var post = posts[i]
+        var link = document.createElement('a')
+        link.href = post.url
+        link.innerText = post.title
+        postElement.appendChild(link)
+      }
+    })
+}
+</script>
 {% endblock %}

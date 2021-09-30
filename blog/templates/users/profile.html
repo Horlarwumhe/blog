@@ -2,21 +2,16 @@
 {% block title %}
     Profile
   {% endblock %}
+
+  {% block header_content super %}
+   <a href="{% url_for 'change_password' %}"> change password </a>
+  {% endblock %}
 {% block content %}
 
-{% if request.user.username == user.username %}
-
-
-<div class="col-md-6">
-	<a class="" style="text-align: center;" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false"aria-controls="collapseExample"> update profile</a>
-{% endif %}
-</div>
 
 <p>
  <div class="col-md-6">
 <ul class="list-group col-sm"> 
-	<li class="list-group-item active">
-	</li> 
 	<li class="list-group-item"> <b> Name</b> {{user.username}}</li> <li class="list-group-item">
 		<b>Email</b> 
 		  {% if request.user.id == user.id %} 
@@ -26,19 +21,38 @@
 		     {% endif %}
 	</li>
 	<ul>
-	Posts
+	<h3 style=""> My Blog Posts </h3>
+	 <span class="fa fa-check">Published</span> <span class="fa fa-close"> Not Published</span>
 	  {% for post in user.posts %} 
-	   <p> <a href="/post/{{post.id}}/{{post.title|url}}">{{post.title}} </a>
+	   <p> <a href="{% url_for 'get_post' title=post.title|url post_id=post.id %}">{{post.title}} </a> {% if post.publish %}
+            <span class="fa fa-check" style="color:green"></span>
+         {% else %}
+            <span class="fa fa-close" style="color:red"></span>
+          {% endif %}
 	   {% if request.user.id == post.author.id %} 
 	   	<ul> <li>
-         <a href="/delete/{{post.id}}">( delete)</a>
+	   	 <a href='{% url_for "edit_post" title=post.title|url opt="edit" id=post.id model="post" %}'>edit 
+	   	 	<span class="fa fa-pencil"></span></a>
+         <a href='{% url_for "edit_post" title=post.title|url opt="delete" id=post.id model="post" %}' class=" delete-post" style="color: red">delete <span class="fa fa-trash"></span></a></a>
         </li></ul>
        {% endif %}
 	   </p>
 	  {% endfor %}
 </ul>
 </div></p>
-
-
+{% block js super %}
+   <script type="text/javascript">
+   	var d = document.getElementsByClassName('delete-post')
+   	for (e of d){
+   	e.addEventListener('click',confirmDelete)
+   }
+   	function confirmDelete(e){
+        var del = confirm("Sure to delete this post?")
+        if (!del){
+        	e.preventDefault()
+        }
+      }
+   </script>
+{% endblock %}
 
 {% endblock %}

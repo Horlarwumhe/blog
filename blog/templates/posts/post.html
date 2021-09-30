@@ -7,7 +7,7 @@
 <link href="/static/css/bs/bootstrap.css" rel="stylesheet">
 <link rel="stylesheet" href="/static/css/w3-theme-black.css">
 <link rel="stylesheet" type="text/css" href="/static/css/highlight.css">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto">
+<!-- <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto"> -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
   html,
@@ -203,25 +203,27 @@
       <div class="w3-twothird w3-container">
 
         <h1 class="w3-text-teal">{{post.title|e}}
-        </h1>({% if  request.user.id == post.author.id %}
-    <a class="pull-right" href="/post/edit/{{post.id}}">Edit post</a>
-    {% endif %})
-        <h6 class="w3-text-teal">{% date post.date '%a %b %d, %Y' %}</h6>
+        </h1>{% if  request.user.id == post.author.id %}
+    <a class="pull-right" href="/post/edit/{{post.id}}"><span class="fa fa-pencil">Edit post</span></a>
+    {% endif %}
+        <p class="w3-text-teal">
+          <span style="" class="fa fa-user-circle"></span><span style="font-size: 20px">{{post.author.username|e}}</span>
+        <!-- </p>
+        <p> -->
+          <span class="fa fa-calendar w3-text-teal">{% date post.date '%a %b %d, %Y' %}</span>
+        </p>
         <p id="post-content">{{post.body|e}}</p>
       </div>
-      <div class="w3-third w3-container">
-        <!-- <p class="w3-border w3-padding-large w3-padding-32 w3-center">AD</p>
+      <!-- <div class="w3-third w3-container">
+        <p class="w3-border w3-padding-large w3-padding-32 w3-center"><img src="{{post.image_url}}"></p>
         <p class="w3-border w3-padding-large w3-padding-64 w3-center">AD</p> -->
       </div>
-      
     </div>
     <div style="text-align: center;" class="share-post">  Share this post
-    <a href="https://twitter.com/intent/tweet/?text={{post.title|url}}&url=">Twitter</a>
-    <a href="https://facebook.com/sharer/sharer.php?u=">Facebook</a>
-    <a href="https://reddit.com/submit/?submit=true&title={{post.title|url}}"> Reddit </a>
+    <a href="https://twitter.com/intent/tweet/?text={{post.title}}&url="><span class="fa fa-twitter">Twitter</span></a>
+    <a href="https://facebook.com/sharer/sharer.php?u="><span class="fa fa-facebook">Facebook</span></a></a>
+    <a href="https://reddit.com/submit/?submit=true&title={{post.title}}"> <span class="fa fa-reddit">Redit</span></a> </a>
     </div>
-
-    
   <!-- COMMENTS -->
 
   <section class="content-item" id="comments">
@@ -235,8 +237,8 @@
           <!-- COMMENT 1 - START -->
           {% for comment in post.comments %}
           <div class="media">
-            <a class="pull-left" href="#"><img class="media-object"
-                src="https://bootdey.com/img/Content/avatar/avatar1.png" alt=""></a>
+            <a class="pull-left" href="#"><!-- <img class="media-object"
+                src="https://bootdey.com/img/Content/avatar/avatar1.png" alt=""> --></a>
             <div class="media-body">
               <h4 class="media-heading">{{comment.author.username}}</h4>
               <p   class="comment-content">{{comment.text}}.</p>
@@ -244,8 +246,8 @@
                 <li><i class="fa fa-calendar"></i>{% date comment.date "%a, %b %d, %Y" %}</li>
               </ul>
               {% if request.user.id == comment.author.id %}
-              <a href="/comment/edit/{{comment.id}}" class="w3-bar-item w3-green ">edit</a>
-              <a href="/comment/delete/{{comment.id}}?next={{request.path}}" class="w3-bar-item w3-red">delete</a>
+              <a href="/comment/edit/{{comment.id}}" class="fa fa-pencil w3-green ">edit</a>
+              <a href="/comment/delete/{{comment.id}}?next={{request.path}}" class="fa fa-trash w3-red">delete</a>
             {% endif %}
             </div>
           </div>
@@ -260,13 +262,14 @@
             <fieldset>
               <div class="row">
                 <div class="col-sm-3 col-lg-2 hidden-xs">
-                  <img class="img-responsive" src="https://bootdey.com/img/Content/avatar/avatar1.png" alt="">
+                  
                 </div>
                 <div class="form-group col-xs-12 col-sm-9 col-lg-10">
-                  <textarea class="form-control" id="message" placeholder="Your message" name='comment' required=""></textarea>
+                  <textarea class="form-control" id="message" placeholder="Your Input" name='comment' required=""></textarea>
+                  <b> markdown is supported</b>
                 </div>
               </div>
-              <b> markdown is supported</b>
+              
             </fieldset>
           </form>
           {% endif %}
@@ -290,12 +293,12 @@
 
     <footer id="myFooter">
       <div class="w3-container w3-theme-l2 w3-padding-32">
-        <h4>Footer</h4>
-      </div>
 
-      <div class="w3-container w3-theme-l1">
-        <p>Powered by <a href="https://www.w3schools.com/w3css/default.asp" target="_blank">w3.css</a></p>
+      <div class="">
+        <p>Powered by <a href="https://github.com/Horlarwumhe/glass" target="_blank">Glass</a> using
+          <a href="https://www.w3schools.com/w3css/default.asp"> w3css </a> theme</p>
       </div>
+    </div>
     </footer>
 
     <!-- END MAIN -->

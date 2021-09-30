@@ -51,10 +51,6 @@ def send_mail(from_, to, body, subject):
 
 
 def send_reset_token(user):
-    # with app.app_ctx():
-    #     user = db.query(User).filter(User.id == user_id).first()
-    #     if not user:
-    #     return
     def send():
         with app.mount():
             user_id = url_b64encode(str(user.id))
@@ -76,15 +72,18 @@ def send_registration_token(user):
     # user = db.query(User).filter(User.id == user_id).first()
     # if not user:
     #     return
-    print(user.id, user)
-    from_ = "Account Confirmation <no-reply@%s>" % (
-        os.environ.get("MAILGUN_DOMAIN"))
-    to = user.email
-    subject = 'Confirm Your Account'
-    # with app.mount():
-    body = render_template('email/registration_token.html', user=user)
-    print(body)
-    send_mail(from_, to, body, subject)
+    def send():
+        from_ = "Account Confirmation <no-reply@%s>" % (
+            os.environ.get("MAILGUN_DOMAIN"))
+        to = user.email
+        subject = 'Confirm Your Account'
+        with app.mount():
+            token = user.create_reg_token()
+            body = render_template('email/registration_token.html', user=user,token=token)
+            print(body)
+            send_mail(from_, to, body, subject)
+
+    Thread(target=send).start()
 
 
 def send_login_mail(user):
@@ -101,3 +100,15 @@ def send_login_mail(user):
             send_mail(from_, to, body, subject)
 
     Thread(target=send).start()
+
+
+def send_password_change_mail(user):
+    def send():
+        environ = request.environ
+        with app.mount(environ):
+            subject = 'Account Notification'
+            from_ = 'Account Notification <no-reply@%s' % os.environ.get(
+                'MAILGUN_DOMAIN')
+            to = user.email
+            body = render_template('password_change_mail.html', user=user)
+            send_mail(from_, to, body, subject)

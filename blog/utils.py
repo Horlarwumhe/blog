@@ -1,13 +1,14 @@
 import base64
 from binascii import Error as BinasciiError
+from functools import wraps
 import re
 import os
 from math import ceil
-from glass import request,redirect
+from glass import request, redirect
+from glass import render_template
 
 
 class Paginator:
-
     def __init__(self, object_list, per_page):
         self.object_list = object_list
         self.per_page = int(per_page)
@@ -54,7 +55,6 @@ class Paginator:
 
 
 class Page:
-
     def __init__(self, object_list, number, paginator):
         self.object_list = object_list
         self.number = number
@@ -69,9 +69,8 @@ class Page:
     def __getitem__(self, index):
         if not isinstance(index, (int, slice)):
             raise TypeError(
-                'Page indices must be integers or slices, not %s.'
-                % type(index).__name__
-            )
+                'Page indices must be integers or slices, not %s.' %
+                type(index).__name__)
         # The object_list is converted to a list so that if it was a QuerySet
         # it won't be a database hit per __getitem__.
         if not isinstance(self.object_list, list):
@@ -84,7 +83,7 @@ class Page:
     @property
     def has_next(self):
         return self.number < self.paginator.num_pages
-    
+
     @property
     def has_previous(self):
         return self.number > 1
@@ -121,12 +120,12 @@ class Page:
         return self.number * self.paginator.per_page
 
 
-
 def login_require(func):
-    def inner(*args,**kwargs):
+    @wraps(func)
+    def inner(*args, **kwargs):
         if not request.user:
-            return redirect('/user/login?next=%s'%request.path)
-        return func(*args,**kwargs)
+            return redirect('/user/login?next=%s' % request.path)
+        return func(*args, **kwargs)
     return inner
 
 
@@ -162,7 +161,18 @@ def secure_filename(filename):
     for sep in os.path.sep, os.path.altsep:
         if sep:
             filename = filename.replace(sep, " ")
-    filename = str(_filename_ascii_strip_re.sub("", "_".join(filename.split()))).strip(
-        "._"
-    )
+    filename = str(_filename_ascii_strip_re.sub("", "_".join(
+        filename.split()))).strip("._")
     return filename
+
+
+def template(template_name):
+    def wrapper(func):
+        @wraps(func)
+        def inner(*args, **kwargs):
+            ret = func(*args, **kwargs)
+            if isinstance(ret, dict):
+                ret = render_template(template_name, **ret)
+            return ret
+        return inner
+    return wrapper
