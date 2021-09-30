@@ -17,7 +17,7 @@ from glass import request
 # from dramatiq.results import Results
 
 from blog.models import User
-from blog.main import db, app
+from blog.main import app
 
 from .utils import url_b64encode
 
@@ -62,7 +62,6 @@ def send_reset_token(user):
                                    user=user,
                                    user_id=user_id,
                                    token=user.create_reset_token())
-            print(body)
             send_mail(from_, to, body, subject)
 
     Thread(target=send).start()
@@ -80,7 +79,6 @@ def send_registration_token(user):
         with app.mount():
             token = user.create_reg_token()
             body = render_template('email/registration_token.html', user=user,token=token)
-            print(body)
             send_mail(from_, to, body, subject)
 
     Thread(target=send).start()
@@ -96,7 +94,6 @@ def send_login_mail(user):
         subject = "Login Notification"
         with app.mount(environ):
             body = render_template('email/login_email.html', user=user)
-            print(body)
             send_mail(from_, to, body, subject)
 
     Thread(target=send).start()
