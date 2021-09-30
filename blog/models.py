@@ -73,7 +73,6 @@ class User(Base):
         return ('%s.%s' % (user_id, url_b64encode(token)))[:25]
 
 
-
 class Post(Base):
     __tablename__ = 'posts'
     id = Column(Integer, primary_key=True)
@@ -113,6 +112,6 @@ class Comment(Base):
 
 def create_db(app):
     engine = create_engine(app.config['DB_ENGINE'] or 'sqlite:memory')
-    # Base.metadata.create_all(engine)
+    Base.metadata.create_all(engine)
     Session = sessionmaker(bind=engine)
     return Session()
