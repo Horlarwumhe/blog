@@ -3,6 +3,7 @@ redis
 requests
 rq
 SQLAlchemy
-psycopg2
+psycopg2_binary
 gunicorn
 dramatiq
+glass-web
