@@ -54,7 +54,7 @@ def send_reset_token(user):
     def send():
         with app.mount():
             user_id = url_b64encode(str(user.id))
-            from_ = "Password Reset <no-reply@%s>" % (
+            from_ = "Horlarwumhe's Blog <no-reply@%s>" % (
                 os.environ.get("MAILGUN_DOMAIN"))
             to = user.email
             subject = 'Password Reset Request'
@@ -72,7 +72,7 @@ def send_registration_token(user):
     # if not user:
     #     return
     def send():
-        from_ = "Account Confirmation <no-reply@%s>" % (
+        from_ = "Horlarwumhe's Blog <no-reply@%s>" % (
             os.environ.get("MAILGUN_DOMAIN"))
         to = user.email
         subject = 'Confirm Your Account'
@@ -88,7 +88,7 @@ def send_login_mail(user):
     environ = request.environ
 
     def send():
-        from_ = "Login Alert <no-reply@%s>" % (
+        from_ = "Horlarwumhe's Blog <no-reply@%s>" % (
             os.environ.get("MAILGUN_DOMAIN"))
         to = user.email
         subject = "Login Notification"

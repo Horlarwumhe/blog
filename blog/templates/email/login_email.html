@@ -3,8 +3,8 @@
 
 <p>You logged in at {% current_time "%H:%M:%p %B %d, %Y" %} from the following device</p>
 
-<b>User-agent: {{request.user_agent}}</b>
-IP Address: {{request.environ.REMOTE_ADDR}}
+<b>User-agent: {{request.user_agent}}
+<p>IP Address: {{request.headers.remote_ip_addr}}</p></b>
 <p>
 	If you dont recognize this, <a href="{{app.config.MAIL_DOMAIN}}{% url_for 'change_password'%}"> secure</a> your account .</p>
 </p>
