@@ -35,6 +35,8 @@ class Paginator:
         top = bottom + self.per_page
         if top >= self.count:
             top = self.count
+        if self.count == 0:
+            return Page((),number,self)
         return Page(self.object_list[bottom:top], number, self)
 
     @property
