@@ -7,3 +7,4 @@ psycopg2_binary
 gunicorn
 dramatiq
 glass-web
+multipart

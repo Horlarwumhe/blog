@@ -13,7 +13,6 @@ from blog.utils import url_b64encode, url_b64decode
 Base = declarative_base()
 secret = os.environ.get('SECRET_KEY', "<secret>")
 
-
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
@@ -91,7 +90,6 @@ class Post(Base):
             author = 'admin'
         return 'Post id=%s, author=%s' % (self.id, author)
 
-
 class Comment(Base):
     __tablename__ = 'comments'
     id = Column(Integer, primary_key=True)
@@ -108,7 +106,6 @@ class Comment(Base):
         else:
             post = 'None'
         return '<Comment post=%s' % post
-
 
 def create_db(app):
     engine = create_engine(app.config['DB_ENGINE'] or 'sqlite:memory')
