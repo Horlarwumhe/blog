@@ -33,10 +33,10 @@ def send_mail(from_, to, body, subject):
     message['From'] = from_
     message['Subject'] = subject
     code, msg = 0, ''
-    with SMTP('smtp.mailgun.org', 587) as smtp:
+    with SMTP('mx.horlarwumhe.xyz', 587) as smtp:
         try:
-            username = os.environ.get("MAILGUN_SMTP_USERNAME")
-            password = os.environ.get("MAILGUN_SMTP_PASSWORD")
+            username = os.environ.get("SMTP_USERNAME")
+            password = os.environ.get("SMTP_PASSWORD")
             if not all((username, password)):
                 logger.warning("mailgun username/password not found")
                 return
